@@ -1,9 +1,9 @@
 import streamlit as st
 import requests
-
-WEBHOOK_SOLICITUDES = "https://gabrielisdi.app.n8n.cloud/webhook/nueva-solicitud"
-
 from datetime import date
+
+# URL del webhook de n8n para solicitudes
+WEBHOOK_SOLICITUDES = "https://gabrielisdi.app.n8n.cloud/webhook/nueva-solicitud"
 
 st.title("Asistente Inmobiliario Inteligente 🏡🤖")
 st.write("Módulo de solicitudes de inquilinos: 'Quiero este piso'.")
@@ -22,7 +22,7 @@ selected_flat = {
 def render_solicitud_piso(selected_flat: dict):
     """
     Formulario COMPLETO de solicitud de piso.
-    En este paso NO se envía a n8n: solo construimos el JSON y lo mostramos.
+    Ahora SÍ se envía a n8n usando el webhook definido arriba.
     """
 
     st.markdown("### Detalle del piso seleccionado")
@@ -114,7 +114,7 @@ def render_solicitud_piso(selected_flat: dict):
             height=150,
         )
 
-        submitted = st.form_submit_button("Enviar solicitud (demo)")
+        submitted = st.form_submit_button("Enviar solicitud")
 
     if submitted:
         if not nombre or not email:
@@ -159,16 +159,16 @@ def render_solicitud_piso(selected_flat: dict):
             "perfil_inquilino": perfil_inquilino,
         }
 
+        # --- Enviamos a n8n ---
         try:
-    response = requests.post(WEBHOOK_SOLICITUDES, json=payload)
-    response.raise_for_status()
-    st.success("✅ Solicitud enviada correctamente a n8n.")
-except Exception as e:
-    st.error(f"❌ Error enviando solicitud a n8n: {e}")
+            response = requests.post(WEBHOOK_SOLICITUDES, json=payload)
+            response.raise_for_status()
+            st.success("✅ Solicitud enviada correctamente a n8n.")
+        except Exception as e:
+            st.error(f"❌ Error enviando solicitud a n8n: {e}")
 
-st.markdown("### JSON enviado")
-st.json(payload)
-
+        st.markdown("### JSON enviado")
+        st.json(payload)
 
 
 # Llamamos a la función para pintar el formulario del piso simulado
