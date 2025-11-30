@@ -1,4 +1,8 @@
 import streamlit as st
+import requests
+
+WEBHOOK_SOLICITUDES = "https://gabrielisdi.app.n8n.cloud/webhook/nueva-solicitud"
+
 from datetime import date
 
 st.title("Asistente Inmobiliario Inteligente 🏡🤖")
@@ -155,10 +159,16 @@ def render_solicitud_piso(selected_flat: dict):
             "perfil_inquilino": perfil_inquilino,
         }
 
-        st.success("✅ Solicitud construida correctamente (demo, sin enviar a n8n).")
+        try:
+    response = requests.post(WEBHOOK_SOLICITUDES, json=payload)
+    response.raise_for_status()
+    st.success("✅ Solicitud enviada correctamente a n8n.")
+except Exception as e:
+    st.error(f"❌ Error enviando solicitud a n8n: {e}")
 
-        st.markdown("### JSON preparado para n8n (solo visualización)")
-        st.json(payload)
+st.markdown("### JSON enviado")
+st.json(payload)
+
 
 
 # Llamamos a la función para pintar el formulario del piso simulado
