@@ -30,26 +30,16 @@ selected_flat = {
 st.markdown(
     """
     <style>
-    /* Fondo general */
-    .main {
+    body {
         background: #f3f6fb;
     }
 
-    /* Quitar el margen superior por defecto */
     .block-container {
         padding-top: 1rem;
         padding-bottom: 3rem;
     }
 
-    /* Tarjeta genérica */
-    .card {
-        background: #ffffff;
-        border-radius: 18px;
-        padding: 1.6rem 1.8rem;
-        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
-    }
-
-    /* Cabecera hero */
+    /* HERO SUPERIOR */
     .hero {
         background: linear-gradient(120deg, #1d4ed8, #0ea5e9);
         color: #ffffff;
@@ -61,7 +51,7 @@ st.markdown(
     }
 
     .hero-title {
-        font-size: 1.9rem;
+        font-size: 2.0rem;
         font-weight: 800;
         margin-bottom: 0.3rem;
     }
@@ -89,7 +79,14 @@ st.markdown(
         border-radius: 999px;
     }
 
-    /* Títulos de sección dentro de tarjetas */
+    /* CARD GENÉRICA (solo 2: izquierda y derecha) */
+    .card-box {
+        background: #ffffff;
+        border-radius: 18px;
+        padding: 1.6rem 1.8rem;
+        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+    }
+
     .section-title {
         font-size: 1.05rem;
         font-weight: 700;
@@ -103,13 +100,14 @@ st.markdown(
         margin-bottom: 0.4rem;
     }
 
-    /* Estilos sobre el formulario */
+    /* Estilo del formulario (sin tarjetas extra) */
     div[data-testid="stForm"] {
-        border-radius: 18px !important;
-        padding: 0.2rem 0 0.4rem 0;
+        border-radius: 0px;
+        padding: 0;
+        background: transparent;
     }
 
-    /* Botones principales */
+    /* Botón principal */
     .stButton > button {
         border-radius: 999px;
         padding: 0.5rem 1.8rem;
@@ -119,7 +117,6 @@ st.markdown(
         color: white;
         box-shadow: 0 8px 20px rgba(37, 99, 235, 0.35);
     }
-
     .stButton > button:hover {
         filter: brightness(1.07);
     }
@@ -148,23 +145,26 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-st.write("")  # pequeño espacio
+st.write("")  # separación pequeña
 
 # -----------------------------
-# LAYOUT DOS COLUMNAS
+# LAYOUT DOS COLUMNAS (SOLO 2 CARDS)
 # -----------------------------
 col_info, col_form = st.columns([0.9, 1.4])
 
-# ---- Columna izquierda: tarjeta con el piso ----
+# =========================================================
+# COLUMNA IZQUIERDA: ÚNICA TARJETA "PISO SELECCIONADO"
+# =========================================================
 with col_info:
-    st.markdown('<div class="card">', unsafe_allow_html=True)
+    st.markdown('<div class="card-box">', unsafe_allow_html=True)
 
     st.markdown("#### Piso seleccionado")
     st.markdown(f"**{selected_flat['titulo']}**")
     st.markdown(
         f"{selected_flat['barrio_ciudad']} &nbsp; • &nbsp; "
         f"{selected_flat.get('num_habitaciones', '?')} hab. &nbsp; • &nbsp; "
-        f"{selected_flat.get('m2', '?')} m²"
+        f"{selected_flat.get('m2', '?')} m²",
+        unsafe_allow_html=True,
     )
 
     precio = selected_flat.get("precio")
@@ -192,17 +192,21 @@ with col_info:
 
     st.markdown("</div>", unsafe_allow_html=True)
 
-# ---- Columna derecha: formulario bonito ----
+# =========================================================
+# COLUMNA DERECHA: ÚNICA TARJETA "COMPLETA TU SOLICITUD"
+# =========================================================
 with col_form:
-    st.markdown('<div class="card">', unsafe_allow_html=True)
+    st.markdown('<div class="card-box">', unsafe_allow_html=True)
+
     st.markdown("### Completa tu solicitud")
 
+    # Formulario COMPLETO (todo dentro de la MISMA card)
     with st.form("form_solicitud_completo"):
+
         st.markdown(
             "<div class='section-title'>Datos personales</div>",
             unsafe_allow_html=True,
         )
-
         nombre = st.text_input("Nombre y apellidos")
         email = st.text_input("Email de contacto")
         telefono = st.text_input("Teléfono de contacto")
@@ -261,7 +265,6 @@ with col_form:
             "<div class='section-title'>Preferencias sobre el piso</div>",
             unsafe_allow_html=True,
         )
-
         max_alquiler = st.number_input(
             "Alquiler máximo que estás dispuesto a pagar (€ / mes)",
             min_value=0,
