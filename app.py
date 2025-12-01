@@ -1,160 +1,178 @@
 import streamlit as st
 import requests
-import json
 from datetime import date
 
-st.set_page_config(page_title="Solicitud de Alquiler – RentMatch", layout="wide")
+st.set_page_config(layout="wide")
 
-# ============================
-# CSS ESTILIZADO – Banner, Layout y Formularios
-# ============================
+# ---------------------------------------------------------
+# CSS PERSONALIZADO
+# ---------------------------------------------------------
 st.markdown("""
 <style>
-/* -------- Banner superior -------- */
-.top-banner {
-    background: linear-gradient(90deg, #125ccf, #5aa9ff);
-    color: white;
-    padding: 40px 55px;
-    border-radius: 14px;
-    margin-bottom: 35px;
-    box-shadow: 0px 4px 14px rgba(0,0,0,0.12);
+
+body {
+    background-color: #f5f7fa;
 }
 
-/* -------- Tarjetas blancas -------- */
-.card {
-    padding: 25px;
-    background: white;
+.big-banner {
+    background: linear-gradient(90deg, #2a60ff, #68a8ff);
+    padding: 45px;
     border-radius: 12px;
-    box-shadow: 0px 2px 10px rgba(0,0,0,0.06);
+    color: white;
+    margin-bottom: 20px;
+}
+
+.section-title {
+    font-size: 32px;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.card {
+    background-color: white;
+    padding: 28px;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
     margin-bottom: 25px;
 }
 
-/* -------- Títulos -------- */
-.section-title {
+/* FIX: elimina el espacio en blanco fantasma */
+.form-card {
+    margin-top: 0 !important;
+}
+
+.form-title {
     font-size: 26px;
-    font-weight: 700;
+    font-weight: bold;
     margin-bottom: 12px;
 }
 
-/* -------- Inputs más elegantes -------- */
-.stTextInput > div > input,
-.stNumberInput > div > input,
-.stSelectbox > div > div {
-    border-radius: 8px;
-    background-color: #f4f6f9;
+.subtitle {
+    font-size: 20px;
+    margin-top: 18px;
+    margin-bottom: 8px;
+    font-weight: bold;
 }
 
 </style>
 """, unsafe_allow_html=True)
 
-# ============================
-# BANNER SUPERIOR (ARREGLADO)
-# ============================
+
+# ---------------------------------------------------------
+# BANNER SUPERIOR
+# ---------------------------------------------------------
 st.markdown("""
-<div class="top-banner">
+<div class="big-banner">
     <h1>RentMatch – Madrid</h1>
-    <p style="font-size:18px; margin-top:8px;">
-        Cuéntanos quién eres y por qué te encaja este piso. 
-        Usaremos tus datos para ayudar al propietario a conocerte mejor.
-    </p>
+    <p>Cuéntanos quién eres y por qué te encaja este piso.  
+    Usaremos tus datos para ayudar al propietario a conocerte mejor.</p>
 </div>
 """, unsafe_allow_html=True)
 
-st.markdown("<div style='height:20px;'></div>", unsafe_allow_html=True)
 
-# ============================
-# CARGA DE DATOS DEL PISO (DEMO)
-# ============================
-piso_demo = {
-    "id_piso": "demo-123",
-    "titulo": "Piso reformado en Salamanca",
-    "zona": "Salamanca, Madrid",
-    "habitaciones": 2,
-    "metros": 65,
-    "precio": 1200,
-    "acepta_mascotas": True
-}
+# ---------------------------------------------------------
+# CONTENEDOR PRINCIPAL: DOS COLUMNAS
+# ---------------------------------------------------------
+col1, col2 = st.columns([1, 1.3])  # col2 ligeramente más grande
 
-# ============================
-# LAYOUT PRINCIPAL: dos columnas
-# ============================
-col1, col2 = st.columns([1.1, 1.4])
 
-# -------- COLUMNA IZQUIERDA: Información del piso --------
+# ---------------------------------------------------------
+# COLUMNA IZQUIERDA — Información del piso seleccionado
+# ---------------------------------------------------------
 with col1:
+    st.markdown("<div class='card'>", unsafe_allow_html=True)
 
-    st.markdown("### Piso seleccionado")
+    st.markdown("<h2>Piso seleccionado</h2>", unsafe_allow_html=True)
 
-    st.markdown(f"""
-    <div class="card">
-        <h3>{piso_demo['titulo']}</h3>
-        <p>{piso_demo['zona']} · {piso_demo['habitaciones']} hab. · {piso_demo['metros']} m²</p>
-        <h3 style="color:#1a8f2d;">{piso_demo['precio']} €/mes</h3>
-        <hr>
-        <p><b>ID del piso:</b> {piso_demo['id_piso']}</p>
-        <p><b>Acepta mascotas:</b> {"Sí" if piso_demo['acepta_mascotas'] else "No"}</p>
-    </div>
-    """, unsafe_allow_html=True)
+    st.subheader("Piso reformado en Salamanca")
+    st.write("Salamanca, Madrid · 2 hab. · 65 m²")
+    st.markdown("<h3 style='color:#1c8c3f;'>1200 €/mes</h3>", unsafe_allow_html=True)
 
-# -------- COLUMNA DERECHA: FORMULARIO COMPLETO --------
+    st.markdown("---")
+
+    st.write("**ID del piso:** demo-123")
+    st.write("**Acepta mascotas:** Sí")
+
+    st.markdown("</div>", unsafe_allow_html=True)
+
+
+# ---------------------------------------------------------
+# COLUMNA DERECHA — FORMULARIO COMPLETO
+# ---------------------------------------------------------
 with col2:
 
-    st.markdown("<div class='card'>", unsafe_allow_html=True)
-    st.markdown('<div class="section-title">Completa tu solicitud</div>', unsafe_allow_html=True)
+    # TÍTULO DEL FORMULARIO
+    st.markdown("""
+        <div class='card form-card'>
+            <h2 class='form-title'>Completa tu solicitud</h2>
+        </div>
+    """, unsafe_allow_html=True)
+
+    # TARJETA DEL FORMULARIO
+    st.markdown("<div class='card form-card'>", unsafe_allow_html=True)
 
     # ---------------- DATOS PERSONALES ----------------
-    st.subheader("Datos personales")
+    st.markdown("<div class='subtitle'>Datos personales</div>", unsafe_allow_html=True)
 
     nombre = st.text_input("Nombre y apellidos")
     email = st.text_input("Email de contacto")
     telefono = st.text_input("Número de contacto")
 
-    # ---------------- DATOS ECONÓMICOS ----------------
-    st.subheader("Situación laboral y económica")
+    # ---------------- SITUACIÓN ECONÓMICA ----------------
+    st.markdown("<div class='subtitle'>Situación laboral y económica</div>", unsafe_allow_html=True)
 
     edad = st.number_input("Edad", min_value=18, max_value=99, value=30)
+
     situacion_laboral = st.selectbox(
         "Situación laboral",
         ["Contrato indefinido", "Contrato temporal", "Autónomo", "Estudiante", "Desempleado"]
     )
+
     ingresos = st.number_input("Ingresos mensuales (€)", min_value=0, value=0)
+
     tipo_contrato = st.selectbox("Tipo de contrato (si aplica)", ["No aplica", "Indefinido", "Temporal"])
 
     # ---------------- COMPOSICIÓN DEL HOGAR ----------------
-    st.subheader("Composición del hogar")
+    st.markdown("<div class='subtitle'>Composición del hogar</div>", unsafe_allow_html=True)
 
     num_ocupantes = st.number_input("Personas que vivirán en el piso", min_value=1, max_value=10, value=1)
+
     hay_ninos = st.selectbox("¿Hay niños en el hogar?", ["No", "Sí"]) == "Sí"
+
     mascotas = st.selectbox("¿Tienes mascotas?", ["No", "Sí"]) == "Sí"
-    tipo_mascotas = ""
-    if mascotas:
-        tipo_mascotas = st.text_input("Tipo de mascotas")
+
+    tipo_mascotas = st.text_input("Tipo de mascotas") if mascotas else ""
 
     # ---------------- PREFERENCIAS ----------------
-    st.subheader("Preferencias declaradas")
+    st.markdown("<div class='subtitle'>Preferencias declaradas</div>", unsafe_allow_html=True)
 
-    max_alquiler = st.number_input("Máximo alquiler que estás dispuesto a pagar (€)", value=1200)
+    max_alquiler = st.number_input("Máximo alquiler (€)", value=1200)
+
     amueblado = st.selectbox("¿Necesitas que esté amueblado?", ["Sí", "No", "Indiferente"])
+
     ascensor = st.selectbox("¿Necesitas ascensor?", ["Sí", "No", "Indiferente"])
+
     mascotas_ok = st.selectbox("¿Debe aceptar mascotas?", ["Sí", "No", "Indiferente"])
+
     fecha_entrada = st.date_input("Fecha prevista de entrada", min_value=date.today())
-    duracion_meses = st.number_input("Duración prevista de alquiler (meses)", min_value=1, value=12)
+
+    duracion_meses = st.number_input("Duración del contrato (meses)", min_value=1, value=12)
 
     # ---------------- PERFIL PERSONAL ----------------
-    st.subheader("Perfil personal")
+    st.markdown("<div class='subtitle'>Perfil personal</div>", unsafe_allow_html=True)
 
     presentacion = st.text_area("Preséntate brevemente")
 
-    st.markdown("</div>", unsafe_allow_html=True)  # cierre del card
+    # CERRAMOS TARJETA DEL FORMULARIO
+    st.markdown("</div>", unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # BOTÓN DE ENVÍO
     enviar = st.button("Enviar solicitud", type="primary")
 
     if enviar:
         payload = {
-            "id_piso": piso_demo["id_piso"],
+            "id_piso": "demo-123",
             "datos_inquilino": {
                 "nombre": nombre,
                 "email": email,
@@ -166,32 +184,26 @@ with col2:
                 "num_ocupantes": num_ocupantes,
                 "hay_ninos": hay_ninos,
                 "mascotas": mascotas,
-                "tipo_mascotas": tipo_mascotas,
+                "tipo_mascotas": tipo_mascotas
             },
             "preferencias_declaradas": {
                 "max_alquiler": max_alquiler,
                 "necesita_amueblado": amueblado,
                 "necesita_ascensor": ascensor,
                 "busca_piso_que_admita_mascotas": mascotas_ok,
-                "fecha_entrada": str(fecha_entrada),
-                "duracion_prevista_meses": duracion_meses,
+                "fecha_entrada": fecha_entrada.isoformat(),
+                "duracion_prevista_meses": duracion_meses
             },
             "perfil_inquilino": {
                 "presentacion": presentacion,
+                "tipo_hogar": "con_ninos" if hay_ninos else "sin_ninos",
+                "tiene_mascotas": mascotas
             }
         }
 
+        # Enviar a n8n
         try:
-            response = requests.post(
-                "https://gabrielisdi.app.n8n.cloud/webhook/nueva-solicitud",
-                json=payload,
-                timeout=10
-            )
-
-            if response.status_code == 200:
-                st.success("✅ Solicitud enviada correctamente.")
-            else:
-                st.error(f"❌ Error al enviar solicitud: {response.status_code}")
-
-        except Exception as e:
-            st.error(f"⚠ Error de conexión: {e}")
+            requests.post("https://gabrielisdi.app.n8n.cloud/webhook/nueva-solicitud", json=payload)
+            st.success("✅ Solicitud enviada correctamente.")
+        except:
+            st.error("❌ Error al enviar la solicitud.")
