@@ -25,223 +25,238 @@ selected_flat = {
 }
 
 # -----------------------------
-# ESTILOS MUY LIGEROS (SIN RECUADROS RAROS)
+# ESTILOS PERSONALIZADOS + HERO
 # -----------------------------
 st.markdown(
     """
     <style>
-    body {
-        background-color: #f5f7fb;
+    /* Fondo general */
+    .main {
+        background: #f3f6fb;
     }
 
+    /* Elimina márgenes */
     .block-container {
-        padding-top: 1.5rem;
-        padding-bottom: 3rem;
+        padding-top: 1rem;
+        padding-bottom: 2rem;
     }
 
-    /* Header superior */
-    .header-bar {
-        background: #1d4ed8;
-        background: linear-gradient(90deg, #1d4ed8, #3b82f6);
-        border-radius: 12px;
-        padding: 16px 22px;
+    /* Tarjetas */
+    .card {
+        background: #ffffff;
+        border-radius: 18px;
+        padding: 1.6rem 1.8rem;
+        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+    }
+
+    /* HERO - Imagen Gran Vía */
+    .hero-img-container {
+        position: relative;
+        height: 180px;
+        border-radius: 22px;
+        overflow: hidden;
+        box-shadow: 0 10px 28px rgba(0,0,0,0.25);
+        margin-bottom: 20px;
+    }
+
+    .hero-img {
+        background-image: url('https://images.unsplash.com/photo-1508050919630-b135583b29af?q=80&w=1920&auto=format&fit=crop');
+        background-size: cover;
+        background-position: center;
+        width: 100%;
+        height: 100%;
+        filter: brightness(0.60);
+    }
+
+    .hero-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(90deg, rgba(29,78,216,0.75), rgba(59,130,246,0.55));
+    }
+
+    .hero-content {
+        position: absolute;
+        top: 20px;
+        left: 26px;
         color: white;
-        margin-bottom: 18px;
     }
 
-    .header-title {
-        font-size: 1.4rem;
-        font-weight: 700;
-        margin-bottom: 4px;
+    .hero-title {
+        font-size: 1.9rem;
+        font-weight: 800;
+        margin-bottom: 6px;
     }
 
-    .header-subtitle {
-        font-size: 0.95rem;
+    .hero-subtitle {
+        font-size: 1rem;
         opacity: 0.95;
+        margin-bottom: 10px;
     }
 
-    /* Botón */
+    /* CHIP */
+    .hero-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(0,0,0,0.35);
+        padding: 4px 12px;
+        border-radius: 999px;
+        font-size: 0.78rem;
+        margin-top: 8px;
+    }
+    .hero-dot {
+        width: 10px;
+        height: 10px;
+        background: #22c55e;
+        border-radius: 50%;
+        box-shadow: 0 0 6px #22c55e;
+    }
+
+    /* Formularios */
+    div[data-testid="stForm"] {
+        border-radius: 18px !important;
+        padding: 0 !important;
+    }
+
+    /* Botón principal */
     .stButton > button {
         border-radius: 999px;
         padding: 0.5rem 1.8rem;
         font-weight: 600;
         border: none;
-        background: linear-gradient(90deg, #1d4ed8, #3b82f6);
+        background: linear-gradient(120deg, #1d4ed8, #0ea5e9);
         color: white;
+        box-shadow: 0 8px 20px rgba(37, 99, 235, 0.35);
     }
-
-    .stButton > button:hover {
-        filter: brightness(1.07);
-    }
-
-    /* Inputs más suaves */
-    .stTextInput > div > input,
-    .stNumberInput > div > input,
-    .stSelectbox > div > div,
-    .stDateInput > div > input {
-        border-radius: 6px;
-        background-color: #f9fafb;
-    }
-
     </style>
+
+    <div class="hero-img-container">
+        <div class="hero-img"></div>
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <div class="hero-title">RentMatch – Madrid</div>
+            <div class="hero-subtitle">Un asistente inmobiliario que entiende tu estilo de vida, no solo tu presupuesto.</div>
+
+            <div class="hero-chip">
+                <div class="hero-dot"></div>
+                Solicitud de alquiler
+            </div>
+        </div>
+    </div>
     """,
     unsafe_allow_html=True
 )
 
 # -----------------------------
-# HEADER SUPERIOR
-# -----------------------------
-st.markdown(
-    """
-    <div class="header-bar">
-        <div class="header-title">RentMatch – Madrid</div>
-        <div class="header-subtitle">
-            Cuéntanos quién eres y por qué te encaja este piso.
-            Usaremos tus datos para ayudar al propietario a conocerte mejor.
-        </div>
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
-
-st.write("")  # pequeño espacio, sin recuadros
-
-# -----------------------------
-# LAYOUT: DOS COLUMNAS LIMPIAS
+# LAYOUT DOS COLUMNAS
 # -----------------------------
 col_info, col_form = st.columns([0.9, 1.4])
 
-# =========================================================
-# COLUMNA IZQUIERDA – INFORMACIÓN DEL PISO
-# =========================================================
+# ------- COLUMNA IZQUIERDA (INFO PISO) -------
 with col_info:
-    st.subheader("Piso seleccionado")
+    st.markdown('<div class="card">', unsafe_allow_html=True)
 
+    st.markdown("#### Piso seleccionado")
     st.markdown(f"**{selected_flat['titulo']}**")
     st.markdown(
-        f"{selected_flat['barrio_ciudad']} · "
-        f"{selected_flat.get('num_habitaciones', '?')} hab. · "
+        f"{selected_flat['barrio_ciudad']} &nbsp; • &nbsp; "
+        f"{selected_flat.get('num_habitaciones', '?')} hab. &nbsp; • &nbsp; "
         f"{selected_flat.get('m2', '?')} m²"
     )
 
-    precio = selected_flat.get("precio")
-    acepta_mascotas = selected_flat.get("acepta_mascotas", False)
-
     st.markdown(
-        f"<span style='font-size:1.2rem; font-weight:700; color:#16a34a;'>{precio} €/mes</span>",
+        f"<span style='font-size:1.3rem; font-weight:700; color:#16a34a;'>{selected_flat['precio']} €/mes</span>",
         unsafe_allow_html=True,
     )
 
     st.markdown("---")
-
-    st.caption(
-        "Esta es una versión demo. Más adelante este bloque vendrá del asistente "
-        "de búsqueda (M4), con fotos reales, mapa y más detalles del piso."
+    st.markdown(
+        """
+        <div style="color:#64748b; font-size:0.85rem;">
+        Esta es una versión demo. Más adelante este bloque vendrá del asistente
+        de búsqueda (M4), con fotos reales, mapa y más detalles del piso.
+        </div>
+        """,
+        unsafe_allow_html=True,
     )
 
-    st.write(f"- **ID del piso:** `{selected_flat['id_piso']}`")
-    st.write(f"- **Acepta mascotas:** {'✅ Sí' if acepta_mascotas else '❌ No'}")
+    st.markdown(
+        f"- ID del piso: `{selected_flat['id_piso']}`\n"
+        f"- Acepta mascotas: {'✅ Sí' if selected_flat['acepta_mascotas'] else '❌ No'}"
+    )
 
-# =========================================================
-# COLUMNA DERECHA – FORMULARIO COMPLETO
-# =========================================================
+    st.markdown("</div>", unsafe_allow_html=True)
+
+# ------- COLUMNA DERECHA (FORMULARIO) -------
 with col_form:
-    st.subheader("Completa tu solicitud")
+    st.markdown('<div class="card">', unsafe_allow_html=True)
+    st.markdown("### Completa tu solicitud")
 
     with st.form("form_solicitud_completo"):
 
-        st.markdown("**Datos personales**")
+        st.markdown("#### Datos personales")
         nombre = st.text_input("Nombre y apellidos")
         email = st.text_input("Email de contacto")
         telefono = st.text_input("Teléfono de contacto")
 
-        st.markdown("**Situación laboral y económica**")
-        col_a, col_b, col_c = st.columns([1, 1, 1])
-        with col_a:
+        st.markdown("#### Situación laboral y económica")
+        colA, colB, colC = st.columns([1, 1, 1])
+
+        with colA:
             edad = st.number_input("Edad", min_value=18, max_value=100, step=1)
-        with col_b:
+        with colB:
             situacion_laboral = st.selectbox(
                 "Situación laboral",
-                [
-                    "Contrato indefinido",
-                    "Contrato temporal",
-                    "Autónomo",
-                    "Estudiante",
-                    "Otro",
-                ],
+                ["Contrato indefinido", "Contrato temporal", "Autónomo", "Estudiante", "Otro"],
             )
-        with col_c:
-            ingresos_mensuales = st.number_input(
-                "Ingresos netos mensuales (€)", min_value=0, step=100
-            )
+        with colC:
+            ingresos_mensuales = st.number_input("Ingresos netos mensuales (€)", min_value=0, step=100)
 
         tipo_contrato = st.selectbox(
             "Tipo de contrato (si aplica)",
             ["No aplica", "Indefinido", "Temporal (> 1 año)", "Temporal (≤ 1 año)"],
         )
 
-        st.markdown("**Composición del hogar**")
+        st.markdown("#### Composición del hogar")
         col1, col2, col3 = st.columns([1, 1, 1])
+
         with col1:
-            num_ocupantes = st.number_input(
-                "Personas que vivirán en el piso",
-                min_value=1,
-                max_value=10,
-                step=1,
-                value=1,
-            )
+            num_ocupantes = st.number_input("Personas que vivirán en el piso", min_value=1, max_value=10, step=1)
         with col2:
-            hay_ninos = st.radio("¿Hay niños en el hogar?", ["No", "Sí"], index=0)
+            hay_ninos = st.radio("¿Hay niños en el hogar?", ["No", "Sí"])
         with col3:
-            mascotas = st.radio("¿Tienes mascotas?", ["No", "Sí"], index=0)
+            mascotas = st.radio("¿Tienes mascotas?", ["No", "Sí"])
 
         tipo_mascotas = ""
         if mascotas == "Sí":
             tipo_mascotas = st.text_input("¿Qué tipo de mascotas tienes?")
 
-        st.markdown("**Preferencias sobre el piso**")
+        st.markdown("#### Preferencias sobre el piso")
+
         max_alquiler = st.number_input(
-            "Alquiler máximo que estás dispuesto a pagar (€ / mes)",
+            "Alquiler máximo (€ / mes)",
             min_value=0,
             step=50,
-            value=int(selected_flat.get("precio", 0))
-            if selected_flat.get("precio")
-            else 0,
+            value=int(selected_flat["precio"]),
         )
 
-        col_p1, col_p2, col_p3 = st.columns([1, 1, 1])
-        with col_p1:
-            necesita_amueblado = st.selectbox(
-                "¿Necesitas que esté amueblado?",
-                ["Indiferente", "Sí", "No"],
-            )
-        with col_p2:
-            necesita_ascensor = st.selectbox(
-                "¿Necesitas ascensor?",
-                ["Indiferente", "Sí", "No"],
-            )
-        with col_p3:
-            admite_mascotas = st.selectbox(
-                "¿Buscas piso que admita mascotas?",
-                ["Indiferente", "Sí", "No"],
-            )
+        colP1, colP2, colP3 = st.columns(3)
+        with colP1:
+            necesita_amueblado = st.selectbox("¿Necesitas que esté amueblado?", ["Indiferente", "Sí", "No"])
+        with colP2:
+            necesita_ascensor = st.selectbox("¿Necesitas ascensor?", ["Indiferente", "Sí", "No"])
+        with colP3:
+            admite_mascotas = st.selectbox("¿Buscas piso que admita mascotas?", ["Indiferente", "Sí", "No"])
 
-        col_f1, col_f2 = st.columns([1, 1])
-        with col_f1:
-            fecha_entrada = st.date_input(
-                "¿Desde qué fecha podrías entrar?",
-                value=date.today(),
-            )
-        with col_f2:
+        colF1, colF2 = st.columns(2)
+        with colF1:
+            fecha_entrada = st.date_input("¿Desde cuándo podrías entrar?", value=date.today())
+        with colF2:
             duracion_prevista_meses = st.number_input(
-                "Duración prevista del alquiler (meses)",
-                min_value=6,
-                max_value=120,
-                step=6,
-                value=12,
+                "Duración prevista (meses)", min_value=6, max_value=120, step=6, value=12
             )
 
-        st.markdown("**Preséntate al propietario**")
+        st.markdown("#### Preséntate al propietario")
         texto_presentacion = st.text_area(
             "Cuéntale quién eres, qué haces y por qué este piso encaja contigo.",
             height=140,
@@ -249,9 +264,7 @@ with col_form:
 
         submitted = st.form_submit_button("Enviar solicitud")
 
-    # -----------------------------
-    # LÓGICA DE ENVÍO
-    # -----------------------------
+    # -------- ENVÍO --------
     if submitted:
         if not nombre or not email:
             st.error("Por favor, rellena al menos tu nombre y email.")
@@ -286,7 +299,7 @@ with col_form:
             }
 
             payload = {
-                "id_piso": selected_flat.get("id_piso"),
+                "id_piso": selected_flat["id_piso"],
                 "datos_inquilino": datos_inquilino,
                 "preferencias_declaradas": preferencias_declaradas,
                 "perfil_inquilino": perfil_inquilino,
@@ -301,3 +314,5 @@ with col_form:
 
             with st.expander("Ver JSON enviado"):
                 st.json(payload)
+
+    st.markdown("</div>", unsafe_allow_html=True)
