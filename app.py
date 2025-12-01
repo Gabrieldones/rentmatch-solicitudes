@@ -1,200 +1,197 @@
 import streamlit as st
 import requests
+import json
 from datetime import date
 
-# ============================
-# CONFIGURACIÓN GENERAL
-# ============================
-st.set_page_config(
-    page_title="RentMatch - Solicitud",
-    page_icon="🏡",
-    layout="wide"
-)
-
-WEBHOOK_SOLICITUDES = "https://gabrielisdi.app.n8n.cloud/webhook/nueva-solicitud"
+st.set_page_config(page_title="Solicitud de Alquiler – RentMatch", layout="wide")
 
 # ============================
-# ESTILOS CSS PERSONALIZADOS
+# CSS ESTILIZADO – Banner, Layout y Formularios
 # ============================
 st.markdown("""
 <style>
-
-body {
-    background-color: #f7f9fc;
-}
-
-/* Contenedor general del formulario con padding extra */
-.form-card {
-    background: #ffffff;
-    border-radius: 12px;
-    padding: 40px 50px !important; /* <<< AUMENTA EL ESPACIO */
-    box-shadow: 0px 3px 12px rgba(0,0,0,0.08);
-}
-
-/* Card del piso */
-.flat-card {
-    background: #ffffff;
-    border-radius: 12px;
-    padding: 30px !important;
-    box-shadow: 0px 3px 10px rgba(0,0,0,0.07);
-}
-
-/* Cabecera bonita */
+/* -------- Banner superior -------- */
 .top-banner {
     background: linear-gradient(90deg, #125ccf, #5aa9ff);
     color: white;
-    padding: 38px;
+    padding: 40px 55px;
+    border-radius: 14px;
+    margin-bottom: 35px;
+    box-shadow: 0px 4px 14px rgba(0,0,0,0.12);
+}
+
+/* -------- Tarjetas blancas -------- */
+.card {
+    padding: 25px;
+    background: white;
     border-radius: 12px;
+    box-shadow: 0px 2px 10px rgba(0,0,0,0.06);
     margin-bottom: 25px;
 }
 
-h1, h2, h3 {
-    font-weight: 600;
+/* -------- Títulos -------- */
+.section-title {
+    font-size: 26px;
+    font-weight: 700;
+    margin-bottom: 12px;
 }
 
-.section-title {
-    margin-top: 25px;
-    font-size: 22px;
-    font-weight: 600;
+/* -------- Inputs más elegantes -------- */
+.stTextInput > div > input,
+.stNumberInput > div > input,
+.stSelectbox > div > div {
+    border-radius: 8px;
+    background-color: #f4f6f9;
 }
 
 </style>
 """, unsafe_allow_html=True)
 
+# ============================
+# BANNER SUPERIOR (ARREGLADO)
+# ============================
+st.markdown("""
+<div class="top-banner">
+    <h1>RentMatch – Madrid</h1>
+    <p style="font-size:18px; margin-top:8px;">
+        Cuéntanos quién eres y por qué te encaja este piso. 
+        Usaremos tus datos para ayudar al propietario a conocerte mejor.
+    </p>
+</div>
+""", unsafe_allow_html=True)
+
+st.markdown("<div style='height:20px;'></div>", unsafe_allow_html=True)
 
 # ============================
-# PISO SIMULADO (DEMO)
+# CARGA DE DATOS DEL PISO (DEMO)
 # ============================
-selected_flat = {
+piso_demo = {
     "id_piso": "demo-123",
     "titulo": "Piso reformado en Salamanca",
-    "barrio_ciudad": "Salamanca, Madrid",
+    "zona": "Salamanca, Madrid",
+    "habitaciones": 2,
+    "metros": 65,
     "precio": 1200,
+    "acepta_mascotas": True
 }
 
-
 # ============================
-# FUNCIÓN FORMULARIO COMPLETO
+# LAYOUT PRINCIPAL: dos columnas
 # ============================
-def render_solicitud_piso(selected_flat):
+col1, col2 = st.columns([1.1, 1.4])
 
-    st.markdown("<div class='top-banner'>", unsafe_allow_html=True)
-    st.markdown("## RentMatch – Madrid")
-    st.markdown("Cuéntanos quién eres y por qué te encaja este piso. Usaremos tus datos para ayudar al propietario a conocerte mejor.")
-    st.markdown("</div>", unsafe_allow_html=True)
+# -------- COLUMNA IZQUIERDA: Información del piso --------
+with col1:
 
-    col1, colEmpty, col2 = st.columns([1, 0.15, 1.3])  
-    # colEmpty crea espacio visual extra entre columnas
+    st.markdown("### Piso seleccionado")
 
-    # =======================
-    # COLUMNA 1 → DETALLE PISO
-    # =======================
-    with col1:
-        st.markdown("<div class='flat-card'>", unsafe_allow_html=True)
-        st.markdown("### Piso seleccionado")
-        st.write(f"**{selected_flat['titulo']}**")
-        st.write(f"{selected_flat['barrio_ciudad']}  ·  2 hab.  ·  65 m²")
-        st.markdown(f"### <span style='color:#0a8f3c;'>{selected_flat['precio']} €/mes</span>", unsafe_allow_html=True)
+    st.markdown(f"""
+    <div class="card">
+        <h3>{piso_demo['titulo']}</h3>
+        <p>{piso_demo['zona']} · {piso_demo['habitaciones']} hab. · {piso_demo['metros']} m²</p>
+        <h3 style="color:#1a8f2d;">{piso_demo['precio']} €/mes</h3>
+        <hr>
+        <p><b>ID del piso:</b> {piso_demo['id_piso']}</p>
+        <p><b>Acepta mascotas:</b> {"Sí" if piso_demo['acepta_mascotas'] else "No"}</p>
+    </div>
+    """, unsafe_allow_html=True)
 
-        st.markdown("---")
-        st.write("**ID del piso:** ", selected_flat["id_piso"])
-        st.write("**Acepta mascotas:**  Sí")
-        st.markdown("</div>", unsafe_allow_html=True)
+# -------- COLUMNA DERECHA: FORMULARIO COMPLETO --------
+with col2:
 
-    # =======================
-    # COLUMNA 2 → FORMULARIO
-    # =======================
-    with col2:
-        st.markdown("<div class='form-card'>", unsafe_allow_html=True)
+    st.markdown("<div class='card'>", unsafe_allow_html=True)
+    st.markdown('<div class="section-title">Completa tu solicitud</div>', unsafe_allow_html=True)
 
-        st.markdown("## Completa tu solicitud")
+    # ---------------- DATOS PERSONALES ----------------
+    st.subheader("Datos personales")
 
-        with st.form("form_solicitud_completo"):
+    nombre = st.text_input("Nombre y apellidos")
+    email = st.text_input("Email de contacto")
+    telefono = st.text_input("Número de contacto")
 
-            st.markdown("### Datos personales")
-            nombre = st.text_input("Nombre y apellidos")
-            email = st.text_input("Email de contacto")
-            telefono = st.text_input("Teléfono de contacto")
+    # ---------------- DATOS ECONÓMICOS ----------------
+    st.subheader("Situación laboral y económica")
 
-            st.markdown("### Situación laboral y económica")
-            edad = st.number_input("Edad", min_value=18, max_value=100, step=1)
-            situacion_laboral = st.selectbox(
-                "Situación laboral",
-                ["Contrato indefinido", "Contrato temporal", "Autónomo", "Estudiante", "Otro"]
-            )
-            ingresos_mensuales = st.number_input("Ingresos netos mensuales (€)", min_value=0, step=100)
-            tipo_contrato = st.selectbox("Tipo de contrato (si aplica)", ["No aplica", "Indefinido", "Temporal (> 1 año)", "Temporal (≤ 1 año)"])
+    edad = st.number_input("Edad", min_value=18, max_value=99, value=30)
+    situacion_laboral = st.selectbox(
+        "Situación laboral",
+        ["Contrato indefinido", "Contrato temporal", "Autónomo", "Estudiante", "Desempleado"]
+    )
+    ingresos = st.number_input("Ingresos mensuales (€)", min_value=0, value=0)
+    tipo_contrato = st.selectbox("Tipo de contrato (si aplica)", ["No aplica", "Indefinido", "Temporal"])
 
-            st.markdown("### Composición del hogar")
-            num_ocupantes = st.number_input("Número de personas que vivirán en el piso", min_value=1, max_value=10, step=1)
-            hay_ninos = st.radio("¿Hay niños?", ["No", "Sí"])
-            mascotas = st.radio("¿Tienes mascotas?", ["No", "Sí"])
-            tipo_mascotas = st.text_input("¿Qué tipo de mascotas tienes?") if mascotas == "Sí" else ""
+    # ---------------- COMPOSICIÓN DEL HOGAR ----------------
+    st.subheader("Composición del hogar")
 
-            st.markdown("### Preferencias")
-            max_alquiler = st.number_input("Alquiler máximo (€ / mes)", min_value=0, step=50, value=selected_flat["precio"])
-            necesita_amueblado = st.selectbox("¿Necesitas piso amueblado?", ["Indiferente", "Sí", "No"])
-            necesita_ascensor = st.selectbox("¿Necesitas ascensor?", ["Indiferente", "Sí", "No"])
-            admite_mascotas = st.selectbox("¿Debe admitir mascotas?", ["Indiferente", "Sí", "No"])
-            fecha_entrada = st.date_input("Fecha en la que podrías entrar", value=date.today())
-            duracion_prevista_meses = st.number_input("Duración prevista del alquiler (meses)", min_value=6, max_value=120, step=6, value=12)
+    num_ocupantes = st.number_input("Personas que vivirán en el piso", min_value=1, max_value=10, value=1)
+    hay_ninos = st.selectbox("¿Hay niños en el hogar?", ["No", "Sí"]) == "Sí"
+    mascotas = st.selectbox("¿Tienes mascotas?", ["No", "Sí"]) == "Sí"
+    tipo_mascotas = ""
+    if mascotas:
+        tipo_mascotas = st.text_input("Tipo de mascotas")
 
-            st.markdown("### Presentación")
-            texto_presentacion = st.text_area("Cuéntale al propietario quién eres y por qué te interesa este piso", height=150)
+    # ---------------- PREFERENCIAS ----------------
+    st.subheader("Preferencias declaradas")
 
-            submitted = st.form_submit_button("Enviar solicitud")
+    max_alquiler = st.number_input("Máximo alquiler que estás dispuesto a pagar (€)", value=1200)
+    amueblado = st.selectbox("¿Necesitas que esté amueblado?", ["Sí", "No", "Indiferente"])
+    ascensor = st.selectbox("¿Necesitas ascensor?", ["Sí", "No", "Indiferente"])
+    mascotas_ok = st.selectbox("¿Debe aceptar mascotas?", ["Sí", "No", "Indiferente"])
+    fecha_entrada = st.date_input("Fecha prevista de entrada", min_value=date.today())
+    duracion_meses = st.number_input("Duración prevista de alquiler (meses)", min_value=1, value=12)
 
-        st.markdown("</div>", unsafe_allow_html=True)
+    # ---------------- PERFIL PERSONAL ----------------
+    st.subheader("Perfil personal")
 
-    # ============================
-    # ENVÍO A N8N
-    # ============================
-    if submitted:
+    presentacion = st.text_area("Preséntate brevemente")
 
-        if not nombre or not email:
-            st.error("Por favor, rellena al menos tu **nombre** y **email**.")
-            return
+    st.markdown("</div>", unsafe_allow_html=True)  # cierre del card
 
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    # BOTÓN DE ENVÍO
+    enviar = st.button("Enviar solicitud", type="primary")
+
+    if enviar:
         payload = {
-            "id_piso": selected_flat["id_piso"],
+            "id_piso": piso_demo["id_piso"],
             "datos_inquilino": {
                 "nombre": nombre,
                 "email": email,
                 "telefono": telefono,
                 "edad": edad,
                 "situacion_laboral": situacion_laboral,
-                "ingresos_mensuales": ingresos_mensuales,
+                "ingresos_mensuales": ingresos,
                 "tipo_contrato": tipo_contrato,
                 "num_ocupantes": num_ocupantes,
-                "hay_ninos": hay_ninos == "Sí",
-                "mascotas": mascotas == "Sí",
+                "hay_ninos": hay_ninos,
+                "mascotas": mascotas,
                 "tipo_mascotas": tipo_mascotas,
             },
             "preferencias_declaradas": {
                 "max_alquiler": max_alquiler,
-                "necesita_amueblado": necesita_amueblado,
-                "necesita_ascensor": necesita_ascensor,
-                "busca_piso_que_admita_mascotas": admite_mascotas,
-                "fecha_entrada": fecha_entrada.isoformat(),
-                "duracion_prevista_meses": duracion_prevista_meses,
+                "necesita_amueblado": amueblado,
+                "necesita_ascensor": ascensor,
+                "busca_piso_que_admita_mascotas": mascotas_ok,
+                "fecha_entrada": str(fecha_entrada),
+                "duracion_prevista_meses": duracion_meses,
             },
             "perfil_inquilino": {
-                "presentacion": texto_presentacion,
-                "tipo_hogar": "con_ninos" if hay_ninos == "Sí" else "sin_ninos",
-                "tiene_mascotas": mascotas == "Sí",
-            },
+                "presentacion": presentacion,
+            }
         }
 
         try:
-            response = requests.post(WEBHOOK_SOLICITUDES, json=payload)
-            response.raise_for_status()
-            st.success("✅ Solicitud enviada correctamente.")
+            response = requests.post(
+                "https://gabrielisdi.app.n8n.cloud/webhook/nueva-solicitud",
+                json=payload,
+                timeout=10
+            )
+
+            if response.status_code == 200:
+                st.success("✅ Solicitud enviada correctamente.")
+            else:
+                st.error(f"❌ Error al enviar solicitud: {response.status_code}")
+
         except Exception as e:
-            st.error(f"❌ Error enviando solicitud: {e}")
-
-        st.markdown("### JSON enviado")
-        st.json(payload)
-
-
-# Ejecutamos la interfaz
-render_solicitud_piso(selected_flat)
+            st.error(f"⚠ Error de conexión: {e}")
