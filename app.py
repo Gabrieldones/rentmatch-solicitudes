@@ -13,19 +13,26 @@ st.set_page_config(
 
 WEBHOOK_SOLICITUDES = "https://gabrielisdi.app.n8n.cloud/webhook/nueva-solicitud"
 
-# Piso simulado (vendrá de M4 en el futuro)
+# -----------------------------
+# PISO SELECCIONADO (NUEVOS DATOS)
+# -----------------------------
 selected_flat = {
-    "id_piso": "demo-123",
-    "titulo": "Piso reformado en Salamanca",
-    "barrio_ciudad": "Salamanca, Madrid",
-    "precio": 1200,
-    "m2": 65,
-    "num_habitaciones": 2,
-    "acepta_mascotas": True,
+    "id_piso": "a63eba5d-53bc-499f-b5aa-0efe0059332a",
+    "titulo": "Piso de 3 habitaciones en Centro, Madrid",
+    "barrio_ciudad": "Centro, Madrid",
+    "precio": 1082,
+    "m2": 81,
+    "num_habitaciones": 3,
+    "acepta_mascotas": False,
 }
 
+descripcion_detallada = (
+    "3 habitaciones, 2 baños, primera planta, sin ascensor, "
+    "sin amueblar, no mascotas, disponible desde **2/1/2026**."
+)
+
 # -----------------------------
-# ESTILOS MUY LIGEROS (SIN RECUADROS RAROS)
+# ESTILOS LIGEROS
 # -----------------------------
 st.markdown(
     """
@@ -82,7 +89,6 @@ st.markdown(
         border-radius: 6px;
         background-color: #f9fafb;
     }
-
     </style>
     """,
     unsafe_allow_html=True
@@ -104,43 +110,52 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-st.write("")  # pequeño espacio, sin recuadros
+st.write("")  # pequeño espacio
 
 # -----------------------------
-# LAYOUT: DOS COLUMNAS LIMPIAS
+# LAYOUT: DOS COLUMNAS
 # -----------------------------
 col_info, col_form = st.columns([0.9, 1.4])
 
 # =========================================================
-# COLUMNA IZQUIERDA – INFORMACIÓN DEL PISO
+# COLUMNA IZQUIERDA – INFORMACIÓN DEL PISO (ACTUALIZADA)
 # =========================================================
 with col_info:
     st.subheader("Piso seleccionado")
 
+    # Título del piso
     st.markdown(f"**{selected_flat['titulo']}**")
+
+    # Línea tipo "Centro, Madrid · 3 hab. · 81 m²"
     st.markdown(
         f"{selected_flat['barrio_ciudad']} · "
         f"{selected_flat.get('num_habitaciones', '?')} hab. · "
         f"{selected_flat.get('m2', '?')} m²"
     )
 
-    precio = selected_flat.get("precio")
-    acepta_mascotas = selected_flat.get("acepta_mascotas", False)
-
+    # Precio
     st.markdown(
-        f"<span style='font-size:1.2rem; font-weight:700; color:#16a34a;'>{precio} €/mes</span>",
+        f"<span style='font-size:1.2rem; font-weight:700; color:#16a34a;'>{selected_flat['precio']} €/mes</span>",
         unsafe_allow_html=True,
     )
 
+    st.markdown("")  # un poco de aire
+
+    # Descripción detallada del piso
+    st.markdown(descripcion_detallada)
+
     st.markdown("---")
 
+    # Texto demo + detalles técnicos
     st.caption(
         "Esta es una versión demo. Más adelante este bloque vendrá del asistente "
         "de búsqueda (M4), con fotos reales, mapa y más detalles del piso."
     )
 
     st.write(f"- **ID del piso:** `{selected_flat['id_piso']}`")
-    st.write(f"- **Acepta mascotas:** {'✅ Sí' if acepta_mascotas else '❌ No'}")
+    st.write(
+        f"- **Acepta mascotas:** {'✅ Sí' if selected_flat['acepta_mascotas'] else '❌ No'}"
+    )
 
 # =========================================================
 # COLUMNA DERECHA – FORMULARIO COMPLETO
@@ -150,11 +165,13 @@ with col_form:
 
     with st.form("form_solicitud_completo"):
 
+        # ------------------ Datos personales ------------------
         st.markdown("**Datos personales**")
         nombre = st.text_input("Nombre y apellidos")
         email = st.text_input("Email de contacto")
         telefono = st.text_input("Teléfono de contacto")
 
+        # ------------------ Situación laboral ------------------
         st.markdown("**Situación laboral y económica**")
         col_a, col_b, col_c = st.columns([1, 1, 1])
         with col_a:
@@ -180,6 +197,7 @@ with col_form:
             ["No aplica", "Indefinido", "Temporal (> 1 año)", "Temporal (≤ 1 año)"],
         )
 
+        # ------------------ Composición del hogar ------------------
         st.markdown("**Composición del hogar**")
         col1, col2, col3 = st.columns([1, 1, 1])
         with col1:
@@ -199,14 +217,14 @@ with col_form:
         if mascotas == "Sí":
             tipo_mascotas = st.text_input("¿Qué tipo de mascotas tienes?")
 
+        # ------------------ Preferencias sobre el piso ------------------
         st.markdown("**Preferencias sobre el piso**")
+
         max_alquiler = st.number_input(
             "Alquiler máximo que estás dispuesto a pagar (€ / mes)",
             min_value=0,
             step=50,
-            value=int(selected_flat.get("precio", 0))
-            if selected_flat.get("precio")
-            else 0,
+            value=int(selected_flat["precio"]),
         )
 
         col_p1, col_p2, col_p3 = st.columns([1, 1, 1])
@@ -241,6 +259,7 @@ with col_form:
                 value=12,
             )
 
+        # ------------------ Presentación ------------------
         st.markdown("**Preséntate al propietario**")
         texto_presentacion = st.text_area(
             "Cuéntale quién eres, qué haces y por qué este piso encaja contigo.",
@@ -286,7 +305,7 @@ with col_form:
             }
 
             payload = {
-                "id_piso": selected_flat.get("id_piso"),
+                "id_piso": selected_flat["id_piso"],
                 "datos_inquilino": datos_inquilino,
                 "preferencias_declaradas": preferencias_declaradas,
                 "perfil_inquilino": perfil_inquilino,
