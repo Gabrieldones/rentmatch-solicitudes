@@ -26,13 +26,8 @@ selected_flat = {
     "acepta_mascotas": False,
 }
 
-descripcion_detallada = (
-    "3 habitaciones, 2 baños, primera planta, sin ascensor, "
-    "sin amueblar, no mascotas, disponible desde **2/1/2026**."
-)
-
 # -----------------------------
-# ESTILOS LIGEROS
+# ESTILOS LIGEROS + PASTILLAS
 # -----------------------------
 st.markdown(
     """
@@ -89,6 +84,26 @@ st.markdown(
         border-radius: 6px;
         background-color: #f9fafb;
     }
+
+    /* Pastillas de características */
+    .pill-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 0.6rem;
+        margin-bottom: 0.6rem;
+    }
+    .pill {
+        display: inline-flex;
+        align-items: center;
+        padding: 4px 10px;
+        border-radius: 999px;
+        background-color: #eef2ff;
+        color: #1f2933;
+        font-size: 0.8rem;
+        font-weight: 500;
+        white-space: nowrap;
+    }
     </style>
     """,
     unsafe_allow_html=True
@@ -110,7 +125,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-st.write("")  # pequeño espacio
+st.write("")
 
 # -----------------------------
 # LAYOUT: DOS COLUMNAS
@@ -118,19 +133,19 @@ st.write("")  # pequeño espacio
 col_info, col_form = st.columns([0.9, 1.4])
 
 # =========================================================
-# COLUMNA IZQUIERDA – INFORMACIÓN DEL PISO (ACTUALIZADA)
+# COLUMNA IZQUIERDA – INFORMACIÓN DEL PISO
 # =========================================================
 with col_info:
     st.subheader("Piso seleccionado")
 
-    # Título del piso
+    # Título
     st.markdown(f"**{selected_flat['titulo']}**")
 
-    # Línea tipo "Centro, Madrid · 3 hab. · 81 m²"
+    # Zona · hab · m2
     st.markdown(
         f"{selected_flat['barrio_ciudad']} · "
-        f"{selected_flat.get('num_habitaciones', '?')} hab. · "
-        f"{selected_flat.get('m2', '?')} m²"
+        f"{selected_flat['num_habitaciones']} hab. · "
+        f"{selected_flat['m2']} m²"
     )
 
     # Precio
@@ -139,19 +154,25 @@ with col_info:
         unsafe_allow_html=True,
     )
 
-    st.markdown("")  # un poco de aire
-
-    # Descripción detallada del piso
-    st.markdown(descripcion_detallada)
+    # Pastillas visuales de características
+    st.markdown(
+        """
+        <div class="pill-row">
+            <span class="pill">🛏️ 3 habitaciones</span>
+            <span class="pill">🛁 2 baños</span>
+            <span class="pill">🏢 1ª planta</span>
+            <span class="pill">🚫 Ascensor</span>
+            <span class="pill">🚫 Amueblado</span>
+            <span class="pill">🚫 Mascotas</span>
+            <span class="pill">📅 Desde 2/1/2026</span>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
     st.markdown("---")
 
-    # Texto demo + detalles técnicos
-    st.caption(
-        "Esta es una versión demo. Más adelante este bloque vendrá del asistente "
-        "de búsqueda (M4), con fotos reales, mapa y más detalles del piso."
-    )
-
+    # ID + Mascotas de forma clara
     st.write(f"- **ID del piso:** `{selected_flat['id_piso']}`")
     st.write(
         f"- **Acepta mascotas:** {'✅ Sí' if selected_flat['acepta_mascotas'] else '❌ No'}"
