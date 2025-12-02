@@ -170,14 +170,10 @@ with col_info:
         unsafe_allow_html=True,
     )
 
-    st.markdown("---")
-
-    # ID + Mascotas de forma clara
     st.write(f"- **ID del piso:** `{selected_flat['id_piso']}`")
-    st.write(
-        f"- **Acepta mascotas:** {'✅ Sí' if selected_flat['acepta_mascotas'] else '❌ No'}"
-    )
-
+    
+    st.markdown("---")
+    
 # =========================================================
 # COLUMNA DERECHA – FORMULARIO COMPLETO
 # =========================================================
